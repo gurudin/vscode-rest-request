@@ -1,9 +1,9 @@
 {
-    "name": "helloworld",
+    "name": "vscode-rest-request",
     "displayName": "",
-    "description": "helloworld",
+    "description": "vscode-rest-request",
     "version": "0.0.1",
-    "publisher": "hello",
+    "publisher": "gaox",
     "engines": {
         "vscode": "^1.16.0"
     },
@@ -11,13 +11,14 @@
         "Other"
     ],
     "activationEvents": [
-        "onCommand:extension.output.send"
+        "onCommand:extension.output.send",
+        "*"
     ],
     "main": "./extension",
     "contributes": {
         "commands": [{
             "command": "extension.output.send",
-            "title": "Hello send"
+            "title": "rest output send"
         }]
     },
     "scripts": {

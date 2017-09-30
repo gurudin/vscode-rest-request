@@ -155,36 +155,57 @@ class restful {
         
         this.startTime = new Date();
 
+        try {
+            this.params.header = JSON.parse(this.params.header);
+            this.params.content = JSON.parse(this.params.content);
+        } catch (error) {
+            this.errorOutputChannel(error);
+            throw this.tip['004'];
+        }
+        
         var request = require("request");
-        
-        var options = { method: 'POST',
-            url: 'http://apibi.xiaohe.com.cn/EnrollmentRate/campusRate',
-            headers: {
-                'postman-token': '23f397e6-914e-1696-0214-a1a44eb63c0e',
-                'cache-control': 'no-cache',
-                'content-type': 'multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW'
-            },
-            formData: { 
-                'keys[timestamp]': '1234567890',
-                'keys[packey]': '09d5d86558be11e7a7544439c44fda44',
-                'keys[data_type]': 'json',
-                'data[page_infos][curr_page]': '1',
-                'data[page_infos][page_size]': '10',
-                'data[conditions][merchant_id]': 'f09783e002ea99a1c335caf07ad921f8',
-                'data[conditions][year_name]': '2017',
-                'data[conditions][season_id]': '9cdea92d9cb7fb96ada1b9ae4f97e3d5',
-                'data[conditions][sort]': 'rate' 
-            }
+        var options = { method: this.params.method,
+            url: this.params.url,
+            headers: this.params.header,
+            // formData: { 
+            //     'keys[timestamp]': '1234567890',
+            //     'keys[packey]': '09d5d86558be11e7a7544439c44fda44',
+            //     'keys[data_type]': 'json',
+            //     'data[page_infos][curr_page]': '1',
+            //     'data[page_infos][page_size]': '10',
+            //     'data[conditions][merchant_id]': 'f09783e002ea99a1c335caf07ad921f8',
+            //     'data[conditions][year_name]': '2017',
+            //     'data[conditions][season_id]': '9cdea92d9cb7fb96ada1b9ae4f97e3d5',
+            //     'data[conditions][sort]': 'rate' 
+            // }
+            formData: this.params.content
         };
-        
-        var _this = this;
-        request(options, function(error, response, body) {
-            if (error) throw new Error(error);
+        console.log(options);
 
-            _this.outputChannel(response, body);
-        });
-
+        try {
+            var _this = this;
+            request(options, function(error, response, body) {
+                if (error) {
+                    _this.errorOutputChannel(error);
+                    throw _this.tip['005'];
+                }
+    
+                _this.outputChannel(response, body);
+            });
+        } catch (error) {
+            this.errorOutputChannel(error);
+            throw this.tip['005'];
+        }
         
+        
+    }
+
+    /**
+     * error outputChannel
+     */
+    errorOutputChannel(error) {
+        this._outputChannel.appendLine('[ERROR]');
+        this._outputChannel.appendLine(error);
     }
 
     /**

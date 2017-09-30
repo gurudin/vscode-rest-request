@@ -1,13 +1,26 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 var vscode = require('vscode');
+var intelliSense = require('./src/intelliSense');
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 function activate(context) {
+    // var restpv = vscode.languages.registerCompletionItemProvider('javascript', function () {
+    //     var completionItems = [];
+    //     var completionItem = new vscode.CompletionItem("aaa");
+    //     completionItem.kind = vscode.CompletionItemKind.Snippet;
+    //     completionItem.detail = "aaa";
+    //     completionItem.filterText = "bbbb";
+    //     completionItem.insertText = new vscode.SnippetString("aaaa$1bbbb$2cccc");
+    //     completionItems.push(completionItem);
+    //     // completionItem.kind()
+    //     return completionItems;
+    // });
+    // context.subscriptions.push(restpv);
+    // context.subscriptions.push(new intelliSense(vscode));
 
     var disposable = vscode.commands.registerCommand('extension.output.send', function () {
-        // vscode.window.showInformationMessage('request send');
         try {
             var restful = require('./src/restful');
             new restful(vscode, 'output');
