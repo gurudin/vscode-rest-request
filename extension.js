@@ -3,6 +3,7 @@
 var vscode = require('vscode');
 // var intelliSense = require('./src/intelliSense');
 
+var _utputChannelthis = vscode.window.createOutputChannel('test');
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 function activate(context) {
@@ -23,7 +24,7 @@ function activate(context) {
     var disposable = vscode.commands.registerCommand('extension.output.send', function () {
         try {
             var restful = require('./src/restful');
-            new restful(vscode, 'output');
+            new restful(vscode, _utputChannelthis, 'output');
             
             /**
              * markdown.showPreview

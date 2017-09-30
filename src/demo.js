@@ -8,23 +8,15 @@ $header
 
 $content
 {
-    "keys": {
-      "timestamp": 1234567890,
-      "packey": "09d5d86558be11e7a7544439c44fda44",
-      "data_type": "json"
-    },
-    "data": {
-      "page_infos": {
-        "curr_page": 1,
-        "page_size": 10
-      },
-      "conditions": {
-        "merchant_id": "f09783e002ea99a1c335caf07ad921f8",
-        "year_name": "2017",
-        "season_id": "9cdea92d9cb7fb96ada1b9ae4f97e3d5",
-        "sort": "rate"
-      }
-    }
+	"keys[timestamp]": "1234567890",
+	"keys[packey]": "09d5d86558be11e7a7544439c44fda44",
+	"keys[data_type]": "json",
+	"data[page_infos][curr_page]": "1",
+	"data[page_infos][page_size]": "10",
+	"data[conditions][merchant_id]": "f09783e002ea99a1c335caf07ad921f8",
+	"data[conditions][year_name]": "2017",
+	"data[conditions][season_id]": "9cdea92d9cb7fb96ada1b9ae4f97e3d5",
+	"data[conditions][sort]": "rate"
   }
 
 ###

@@ -1,13 +1,14 @@
 class restful {
-
     /**
      * 构造函数，传入vscode对象
      */
-    constructor(_vscode, _type='output') {
+    constructor(_vscode, _outputChannel, _type='output') {
         this.type = _type;
+        this.outputChannel = _outputChannel;
         this.vscode = _vscode;
         this.init();
     }
+
 
     /**
      * 初始化
@@ -56,17 +57,14 @@ class restful {
                         break;
                     }
 
-                    // this.chars += this.editor.document.lineAt(i).text;
                     this.chars.push(this.editor.document.lineAt(i).text);
                 }
             } else {
                 // 选取上部分
                 for (var i=0; i<selection['start']['line']; i++) {
-                    // this.chars += this.editor.document.lineAt(i).text;
                     this.chars.push(this.editor.document.lineAt(i).text);
 
                     if (this.editor.document.lineAt(i).text == '###') {
-                        // this.chars = '';
                         this.chars = [];
                     }
                 }
@@ -77,13 +75,11 @@ class restful {
                         break;
                     }
 
-                    // this.chars += this.editor.document.lineAt(i).text;
                     this.chars.push(this.editor.document.lineAt(i).text);
                 }
             }
         } else { // 多行选择
             for (var i = selection['start']['line']; i <= selection['end']['line']; i++) {
-                // this.chars += this.editor.document.lineAt(i).text;
                 this.chars.push(this.editor.document.lineAt(i).text);
             }
         }
@@ -91,9 +87,6 @@ class restful {
         // 去掉空行
         this.chars = this.clearNull(this.chars);
         
-        
-        // console.log(this.chars);
-        // console.log(selection);
         this.valid(selection);
     }
 
@@ -146,13 +139,6 @@ class restful {
      * rest
      */
     rest() {
-        if (this.type == 'output') {
-            this._outputChannel = this.vscode.window.createOutputChannel('rest');
-            this._outputChannel.clear();
-            this._outputChannel.show(true);
-            this._outputChannel.appendLine("[Running] " + this.params.method + " "+this.params.url);
-        }
-        
         this.startTime = new Date();
 
         try {
@@ -163,24 +149,20 @@ class restful {
             throw this.tip['004'];
         }
         
+        if (this.type == 'output') {
+            // this.outputChannel = this.vscode.window.createOutputChannel('rest');
+            this.outputChannel.clear();
+            this.outputChannel.show(true);
+            this.outputChannel.appendLine('Loading');
+        }
+
+
         var request = require("request");
         var options = { method: this.params.method,
             url: this.params.url,
             headers: this.params.header,
-            // formData: { 
-            //     'keys[timestamp]': '1234567890',
-            //     'keys[packey]': '09d5d86558be11e7a7544439c44fda44',
-            //     'keys[data_type]': 'json',
-            //     'data[page_infos][curr_page]': '1',
-            //     'data[page_infos][page_size]': '10',
-            //     'data[conditions][merchant_id]': 'f09783e002ea99a1c335caf07ad921f8',
-            //     'data[conditions][year_name]': '2017',
-            //     'data[conditions][season_id]': '9cdea92d9cb7fb96ada1b9ae4f97e3d5',
-            //     'data[conditions][sort]': 'rate' 
-            // }
             formData: this.params.content
         };
-        console.log(options);
 
         try {
             var _this = this;
@@ -189,60 +171,65 @@ class restful {
                     _this.errorOutputChannel(error);
                     throw _this.tip['005'];
                 }
-    
-                _this.outputChannel(response, body);
+                
+                if (_this.type == 'output') {
+                    _this.finalOutputChannel(response, body);
+                }
             });
         } catch (error) {
             this.errorOutputChannel(error);
             throw this.tip['005'];
         }
-        
-        
     }
 
     /**
      * error outputChannel
      */
     errorOutputChannel(error) {
-        this._outputChannel.appendLine('[ERROR]');
-        this._outputChannel.appendLine(error);
+        if (this.type == 'output') {
+            this.outputChannel.clear();
+            this.outputChannel.show(true);
+            this.outputChannel.appendLine('[ERROR]');
+            this.outputChannel.appendLine(error);
+        }   
     }
 
     /**
-     * outputChannel
+     * finalOutputChannel
      */
-    outputChannel(response, body) {
-        body = JSON.parse(body);
-
-        this._outputChannel.appendLine('[StatusCode] ' + response.statusCode);
-        this._outputChannel.appendLine('[Headers]');
-        this._outputChannel.appendLine('{');
-        this._outputChannel.appendLine('   "Data": "' + response.headers.date + '"');
-        this._outputChannel.appendLine('   "Server": "' + response.headers.server + '"');
+    finalOutputChannel(response, body) {
+        this.outputChannel.clear();
+        this.outputChannel.show(true);
+        this.outputChannel.appendLine("[Running] " + this.params.method + " "+this.params.url);
+        this.outputChannel.appendLine('[StatusCode] ' + response.statusCode);
+        this.outputChannel.appendLine('[Headers]');
+        this.outputChannel.appendLine('{');
+        this.outputChannel.appendLine('   "Data": "' + response.headers.date + '"');
+        this.outputChannel.appendLine('   "Server": "' + response.headers.server + '"');
         if (typeof response.headers['x-powered-by'] != 'undefined') {
-            this._outputChannel.appendLine('   "X-powered-by": "' + response.headers['x-powered-by'] + '"');
+            this.outputChannel.appendLine('   "X-powered-by": "' + response.headers['x-powered-by'] + '"');
         }
         if (typeof response.headers['content-length'] != 'undefined') {
-            this._outputChannel.appendLine('   "Content-length": ' + response.headers['content-length']);
+            this.outputChannel.appendLine('   "Content-length": ' + response.headers['content-length']);
         }
         if (typeof response.headers.connection != 'undefined') {
-            this._outputChannel.appendLine('   "Connection": "' + response.headers.connection + '"');
+            this.outputChannel.appendLine('   "Connection": "' + response.headers.connection + '"');
         }
         if (typeof response.headers['content-type'] != 'undefined') {
-            this._outputChannel.appendLine('   "Content-type": "' + response.headers['content-type'] + '"');
+            this.outputChannel.appendLine('   "Content-type": "' + response.headers['content-type'] + '"');
         }
-        this._outputChannel.appendLine('}');
+        this.outputChannel.appendLine('}');
 
-        this._outputChannel.appendLine('');
-        this._outputChannel.appendLine('[Body]');
-        this._outputChannel.appendLine(JSON.stringify(body));
+        this.outputChannel.appendLine('');
+        this.outputChannel.appendLine('[Body]');
+        this.outputChannel.appendLine(body);
 
         const endTime = new Date();
         const elapsedTime = (endTime.getTime() - this.startTime.getTime()) / 1000;
 
-        this._outputChannel.appendLine('');
-        this._outputChannel.appendLine('[Done] exited ' + elapsedTime + ' seconds');
-        this._outputChannel.appendLine('');
+        this.outputChannel.appendLine('');
+        this.outputChannel.appendLine('[Done] exited ' + elapsedTime + ' seconds');
+        this.outputChannel.appendLine('');
     }
 
     /**
