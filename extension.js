@@ -3,7 +3,7 @@
 var vscode = require('vscode');
 // var intelliSense = require('./src/intelliSense');
 
-var _utputChannelthis = vscode.window.createOutputChannel('test');
+var _utputChannelthis = vscode.window.createOutputChannel('rest');
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 function activate(context) {
